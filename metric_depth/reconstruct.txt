@@ -1,0 +1,2 @@
+/home/guilherme/Documents/SEE-Dataset/
+/home/guilherme/Documents/SEE-Dataset/Sonar-Dataset-mission-1-P900/auv-12/Cartesian-images/0.png

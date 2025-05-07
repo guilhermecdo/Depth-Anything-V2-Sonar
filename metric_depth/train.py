@@ -17,6 +17,7 @@ from torch.utils.tensorboard import SummaryWriter
 from dataset.hypersim import Hypersim
 from dataset.kitti import KITTI
 from dataset.vkitti2 import VKITTI2
+from dataset.see import SEE
 from depth_anything_v2.dpt import DepthAnythingV2
 from util.dist_helper import setup_distributed
 from util.loss import SiLogLoss
@@ -27,10 +28,10 @@ from util.utils import init_log
 parser = argparse.ArgumentParser(description='Depth Anything V2 for Metric Depth Estimation')
 
 parser.add_argument('--encoder', default='vitl', choices=['vits', 'vitb', 'vitl', 'vitg'])
-parser.add_argument('--dataset', default='hypersim', choices=['hypersim', 'vkitti'])
+parser.add_argument('--dataset', default='hypersim', choices=['hypersim', 'vkitti','see'])
 parser.add_argument('--img-size', default=518, type=int)
-parser.add_argument('--min-depth', default=0.001, type=float)
-parser.add_argument('--max-depth', default=20, type=float)
+parser.add_argument('--min-depth', default=0, type=int)
+parser.add_argument('--max-depth', default=20, type=int)
 parser.add_argument('--epochs', default=40, type=int)
 parser.add_argument('--bs', default=2, type=int)
 parser.add_argument('--lr', default=0.000005, type=float)
@@ -63,6 +64,8 @@ def main():
         trainset = Hypersim('dataset/splits/hypersim/train.txt', 'train', size=size)
     elif args.dataset == 'vkitti':
         trainset = VKITTI2('dataset/splits/vkitti2/train.txt', 'train', size=size)
+    elif args.dataset == 'see':
+        trainset = SEE('dataset/splits/see/train.txt', 'train')
     else:
         raise NotImplementedError
     trainsampler = torch.utils.data.distributed.DistributedSampler(trainset)
@@ -72,6 +75,8 @@ def main():
         valset = Hypersim('dataset/splits/hypersim/val.txt', 'val', size=size)
     elif args.dataset == 'vkitti':
         valset = KITTI('dataset/splits/kitti/val.txt', 'val', size=size)
+    elif args.dataset == 'see':
+        valset = SEE('dataset/splits/see/val.txt', 'val')
     else:
         raise NotImplementedError
     valsampler = torch.utils.data.distributed.DistributedSampler(valset)

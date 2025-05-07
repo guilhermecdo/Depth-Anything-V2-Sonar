@@ -35,10 +35,18 @@ if __name__ == '__main__':
         'vitg': {'encoder': 'vitg', 'features': 384, 'out_channels': [1536, 1536, 1536, 1536]}
     }
     
-    depth_anything = DepthAnythingV2(**{**model_configs[args.encoder], 'max_depth': args.max_depth})
-    depth_anything.load_state_dict(torch.load(args.load_from, map_location='cpu'))
-    depth_anything = depth_anything.to(DEVICE).eval()
+    #depth_anything = DepthAnythingV2(**{**model_configs[args.encoder], 'max_depth': args.max_depth})
+    #depth_anything.load_state_dict(torch.load(args.load_from, map_location='cpu'))
+    #depth_anything = depth_anything.to(DEVICE).eval()
     
+    depth_anything = DepthAnythingV2(**{**model_configs[args.encoder], 'max_depth': args.max_depth})
+
+    #depth_anything.load_state_dict(torch.load(args.load_from, map_location='cpu'))
+    model_state_dict = torch.load(args.load_from, map_location='cpu')['model']
+    model_state_dict = {k.replace('module.', ''): v for k, v in model_state_dict.items()}
+    depth_anything.load_state_dict(model_state_dict)
+    depth_anything = depth_anything.to(DEVICE).eval()
+
     if os.path.isfile(args.img_path):
         if args.img_path.endswith('txt'):
             with open(args.img_path, 'r') as f:
